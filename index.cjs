@@ -6,7 +6,7 @@ const PORT = 3000;
 
 const cors = require('cors');
 app.use(cors({
-  origin: 'http://localhost:5173', // フロントエンドのURLに合わせてください
+  origin: 'http://localhost:5173', 
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
@@ -15,7 +15,8 @@ const db = mysql.createConnection({
   host: 'localhost',  // Dockerなら 'mapquiz-mysql-container'
   user: 'root',
   password: 'k12l23',  // 実際のパスワードを設定
-  database: 'geolingo'
+  database: 'geolingo',
+  charset: 'utf8mb4'
 });
 
 // 接続確認
@@ -39,7 +40,6 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-
 // 国名一覧を取得するAPI
 app.get('/api/countries', (req, res) => {
   db.query('SELECT * FROM countries', (err, results) => {
@@ -52,6 +52,7 @@ app.get('/api/countries', (req, res) => {
   });
 });
 
+// 文字一覧を取得するAPI
 app.get('/api/letters', (req, res) => {
   db.query('SELECT * FROM language_letters', (err, results) => {
     if (err) {
@@ -59,11 +60,10 @@ app.get('/api/letters', (req, res) => {
       res.status(500).json({ error: 'データ取得に失敗しました' });
       return;
     }
-    console.log('取得データ:', results); // 追加
+    console.log('取得データ:', results);
     res.json(results);
   });
 });
-
 
 app.get('/api/letters/:country', (req, res) => {
   const country = req.params.country;
@@ -76,5 +76,35 @@ app.get('/api/letters/:country', (req, res) => {
     res.json(results);
   });
 });
+
+// 問題を取得するAPI
+app.get("/api/questions", (req, res) => {
+  console.log("クエリパラメータ:", req.query);
+  const { country } = req.query;
+
+  if (!country) {
+    return res.status(400).json({ error: "Country is required" });
+  }
+
+  db.query(
+    "SELECT local_name AS word, english_name AS answer FROM places WHERE country_name = ?",
+    [country],
+    (err, results) => {
+      if (err) {
+        console.error("データ取得エラー:", err);
+        res.status(500).json({ error: "Database error" });
+        return;
+      }
+      if (!results || results.length === 0) {
+        return res.status(404).json({ error: "No questions found for this country" });
+      }
+      res.json(results);
+    }
+  );
+});
+
+
+
+
 
 
