@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 
 const app = express();
-const PORT = 3000;
+const port = process.env.PORT || 3000;
 
 const cors = require('cors');
 app.use(cors({
@@ -12,10 +13,10 @@ app.use(cors({
 }));
 
 const db = mysql.createConnection({
-  host: 'localhost',  // Dockerなら 'mapquiz-mysql-container'
-  user: 'root',
-  password: 'k12l23',  // 実際のパスワードを設定
-  database: 'geolingo',
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
   charset: 'utf8mb4'
 });
 
@@ -36,8 +37,8 @@ app.get('/', (req, res) => {
   res.send('Hello from MapQuiz Backend');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });
 
 // 国名一覧を取得するAPI
