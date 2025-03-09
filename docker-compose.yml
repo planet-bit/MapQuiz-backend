@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mapquiz-mysql:
+    image: mysql:8
+    container_name: mapquiz-mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mapquizdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - mapquiz-network
+
+  mapquiz-node:
+    build:
+      context:  .
+      dockerfile: Dockerfile
+    container_name: mapquiz-node-container
+    working_dir: /app
+    volumes:
+      - .:/app
+ 
+    ports:
+      - "3000:3000"
+    command: ["node", "index.cjs"]
+    depends_on:
+      - mapquiz-mysql
+    environment:
+      DB_HOST: mapquiz-mysql-container 
+      DB_PORT: 3306
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: mapquizdb
+    networks:
+      - mapquiz-network
+
+volumes:
+  mysql_data:
+
+networks:
+  mapquiz-network:
+    driver: bridge
