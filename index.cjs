@@ -54,19 +54,6 @@ app.get('/api/countries', (req, res) => {
   });
 });
 
-// 文字一覧を取得するAPI
-app.get('/api/letters', (req, res) => {
-  db.query('SELECT * FROM language_letters', (err, results) => {
-    if (err) {
-      console.error('データ取得エラー:', err);
-      res.status(500).json({ error: 'データ取得に失敗しました' });
-      return;
-    }
-    console.log('取得データ:', results);
-    res.json(results);
-  });
-});
-
 app.get('/api/letters/:country', (req, res) => {
   const country = req.params.country;
   db.query('SELECT * FROM language_letters WHERE country_name = ?', [country], (err, results) => {
