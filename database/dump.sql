@@ -35,7 +35,7 @@ CREATE TABLE `countries` (
 
 LOCK TABLES `countries` WRITE;
 /*!40000 ALTER TABLE `countries` DISABLE KEYS */;
-INSERT INTO `countries` VALUES (1,'Russia'),(2,'SouthKorea'),(3,'Banladesh');
+INSERT INTO `countries` VALUES (1,'Russia'),(2,'SouthKorea'),(3,'Bangladesh');
 /*!40000 ALTER TABLE `countries` ENABLE KEYS */;
 UNLOCK TABLES;
 
