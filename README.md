@@ -1,16 +1,18 @@
-# MapQuiz Backend
+# MapQuiz-backend
 
 ## 概要
 
-MapQuizのバックエンドはExpressを使用しており、フロントエンドと連携してクイズ機能を提供します。
+MapQuiz-backendはExpressを使用しており、MapQuiz-frontendと連携してクイズ機能を提供します。
+
+MapQuiz-backendでは、MySQLデータベースを使用して、クイズの問題や回答などのデータを管理します。データベースはDockerコンテナ内で管理され、docker-composeを使って環境が構築されます。
 
 ## 環境構築
 
 ### 必要なツール
 
-- Node.js (推奨バージョン: xx.xx.x)
+- Node.js (推奨バージョン: v22.13.1)
 - npm
-- Docker (オプション: MySQLコンテナを使用する場合)
+- Docker
 
 ### インストール手順
 
@@ -21,29 +23,30 @@ MapQuizのバックエンドはExpressを使用しており、フロントエン
    cd MapQuiz-backend
    ```
 
-2. 依存関係をインストール
+2. 環境変数を設定
 
-   ```sh
-   npm install
-   ```
-
-3. 環境変数を設定\
    環境変数の設定には、リポジトリ内の `.env.sample` を参考にしてください。
 
-   1. `.env.sample` をコピーして `.env` を作成
-
-
-      ```sh
-      cp .env.sample .env
-      ```
-   2. 必要に応じて `.env` を編集
-
-   **注意:** `.env` ファイルは `.gitignore` に含まれているため、公開しないようにしてください。
-
-4. サーバーを起動
+   `.env.sample` をコピーして `.env` を作成
 
    ```sh
-   npm start
+   cp .env.sample .env
+   ```
+
+3. Dockerコンテナの起動
+
+   ```sh
+   docker-compose up -d
+   ```
+
+4. バックエンドアプリの確認
+
+   コンテナが起動した後、Node.jsのバックエンドアプリケーションが実行されます。
+   
+   mapquiz-node-containerがポート番号3000でリッスンします。ブラウザで以下のURLを開いて、APIが動作していることを確認してください。
+
+   ```sh
+   http://localhost:3000
    ```
 
 ## API エンドポイント
@@ -51,10 +54,11 @@ MapQuizのバックエンドはExpressを使用しており、フロントエン
 | メソッド | エンドポイント      | 説明 |
 | ---- | -----------------     | ---------------- |
 | GET  | /api/countries        | 国選択リストを取得 |
-| GET  | /api/questions        | クイズの問題を取得 |
+| GET  | /api/questions?country={国名}  | 各国のクイズの問題を取得 |
 | GET  | /api/letters/:country | 各国の文字情報を取得 |
 
 ## データベース
 
 - MySQLを使用（docker-compose で管理可能）
-- 初期データの投入は `database/dump.sql` を参照
+- 初期データの投入はコンテナ起動時に自動で行われます。\
+  database/dump.sqlが/docker-entrypoint-initdb.d/にマウントされ、コンテナ起動時に自動的に実行されます。
