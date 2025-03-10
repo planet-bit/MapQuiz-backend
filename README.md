@@ -32,14 +32,19 @@ MapQuiz-backendでは、MySQLデータベースを使用して、クイズの問
    ```sh
    cp .env.sample .env
    ```
+3. 必要なパッケージをインストールします
 
-3. Dockerコンテナの起動
+   ```sh
+   npm install
+   ```
+
+4. Dockerコンテナの起動
 
    ```sh
    docker-compose up -d
    ```
 
-4. バックエンドアプリの確認
+5. バックエンドアプリの確認
 
    コンテナが起動した後、Node.jsのバックエンドアプリケーションが実行されます。
    
@@ -62,3 +67,7 @@ MapQuiz-backendでは、MySQLデータベースを使用して、クイズの問
 - MySQLを使用（docker-compose で管理可能）
 - 初期データの投入はコンテナ起動時に自動で行われます。\
   database/dump.sqlが/docker-entrypoint-initdb.d/にマウントされ、コンテナ起動時に自動的に実行されます。
+
+## フロントエンドの起動
+
+バックエンドと連携するフロントエンドアプリケーションのセットアップについては、MapQuiz-frontendリポジトリを参照してください。フロントエンドアプリの実行手順は、MapQuiz-frontend READMEを確認してください。
