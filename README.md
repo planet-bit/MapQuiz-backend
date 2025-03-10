@@ -50,7 +50,7 @@ MapQuiz-backendでは、MySQLデータベースを使用して、クイズの問
    
    mapquiz-node-containerがポート番号3000でリッスンします。
    
-   ブラウザでは通常　`http://localhost:3000`を開いて、APIが動作していることを確認してください。
+   ブラウザでは、[http://localhost:3000](http://localhost:3000) を開いて、APIが動作していることを確認してください。
    
 
 ## API エンドポイント
