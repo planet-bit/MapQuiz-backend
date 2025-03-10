@@ -48,11 +48,10 @@ MapQuiz-backendでは、MySQLデータベースを使用して、クイズの問
 
    コンテナが起動した後、Node.jsのバックエンドアプリケーションが実行されます。
    
-   mapquiz-node-containerがポート番号3000でリッスンします。ブラウザで以下のURLを開いて、APIが動作していることを確認してください。
-
-   ```sh
-   http://localhost:3000
-   ```
+   mapquiz-node-containerがポート番号3000でリッスンします。
+   
+   ブラウザでは通常　http://localhost:3000　を開いて、APIが動作していることを確認してください。
+   
 
 ## API エンドポイント
 
@@ -70,4 +69,4 @@ MapQuiz-backendでは、MySQLデータベースを使用して、クイズの問
 
 ## フロントエンドの起動
 
-バックエンドと連携するフロントエンドアプリケーションのセットアップについては、MapQuiz-frontendリポジトリを参照してください。フロントエンドアプリの実行手順は、MapQuiz-frontend READMEを確認してください。
+バックエンドと連携するフロントエンドアプリケーションのセットアップについては、MapQuiz-frontend READMEを参照してください。
