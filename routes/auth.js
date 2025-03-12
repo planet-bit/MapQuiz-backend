@@ -2,6 +2,8 @@ const router = require("express").Router();
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const pool = require("../db.cjs");
+const JWT = require("jsonwebtoken")
+const authMiddleware = require("../middleware/auth");
 
 console.log("pool の内容:", pool);
 
@@ -39,7 +41,7 @@ router.post("/register",
       }
 
       // パスワードのハッシュ化
-      let hashedPassword = await bcrypt.hash(password, 10);
+      let hashedPassword = await bcrypt.hash(password, 12);
       console.log(hashedPassword);
 
       // ユーザー情報のデータベースに挿入
@@ -47,8 +49,21 @@ router.post("/register",
         "INSERT INTO users (email, password) VALUES (?, ?)",
         [email, hashedPassword]
       );
+      
+      //クライアントへJWTの発行
+      const token = await JWT.sign({
+          email,
+        },
+        process.env.SECRET_KEY,
+        {
+          expiresIn: "24h",
+        }
+      );
+      
+      return res.json({
+        token: token,
+      })
 
-      res.json({ message: "ユーザー登録が完了しました！" });
     } catch (error) {
       console.error("Error:", error);
       res.status(500).json({ error: "サーバーエラーが発生しました。", details: error.message });
@@ -59,11 +74,54 @@ router.post("/register",
   }
 );
 
-module.exports = router;
+//ログイン用のAPI
+router.post("/login", async (req, res) => {
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    const { email, password } = req.body;
 
+    // データベースからユーザーを取得
+    const [rows] = await connection.execute(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
 
+    if (rows.length === 0) {
+      return res.status(400).json({ error: "そのユーザーは存在しません。" });
+    }
 
+    const user = rows[0];
 
+    // パスワードの照合
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "パスワードが異なります。" });
+    }
 
+    // JWTの発行
+    const token = await JWT.sign(
+      { email },
+      process.env.SECRET_KEY, 
+      { expiresIn: "24h" }
+    );
+
+    return res.json({ token });
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ error: "サーバーエラーが発生しました。" });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    return res.json({ user: req.user });
+  } catch (error) {
+    return res.status(500).json({ error: "サーバーエラー" });
+  }
+});
 
 module.exports = router;

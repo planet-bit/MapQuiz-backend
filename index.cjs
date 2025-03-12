@@ -1,23 +1,21 @@
 require('dotenv').config();
 const express = require('express');
-
-
+const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
-const cors = require('cors');
 const pool = require("./db.cjs");
-
-app.use(express.json());
 const auth = require("./routes/auth");
-app.use("/auth", auth);
-
+app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:5173', 
-  methods: ['GET', 'POST'],
+  origin: 'http://localhost:5173', // フロントエンドのURL
+  methods: ['GET', 'POST', 'OPTIONS'], 
   allowedHeaders: ['Content-Type'],
 }));
-
-
+app.use("/auth", auth);
+app.options('*', cors());
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
 
 (async () => {
   try {
@@ -29,17 +27,11 @@ app.use(cors({
   }
 })();
 
-
-
-
-
 app.get('/', (req, res) => {
   res.send('Hello from MapQuiz Backend');
 });
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+
 
 // 国名一覧を取得するAPI
 app.get("/api/countries", async (req, res) => {
@@ -93,7 +85,3 @@ app.get("/api/questions", async (req, res) => {
 });
 
 module.exports = pool;
-
-
-
-
