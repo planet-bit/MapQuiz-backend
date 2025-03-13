@@ -10,6 +10,7 @@ app.use(cors({
   origin: 'http://localhost:5173', // フロントエンドのURL
   methods: ['GET', 'POST', 'OPTIONS'], 
   allowedHeaders: ['Content-Type'],
+  credentials: true, // クッキーを送受信するために必要
 }));
 app.use("/auth", auth);
 app.options('*', cors());

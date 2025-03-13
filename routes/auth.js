@@ -60,9 +60,14 @@ router.post("/register",
         }
       );
       
-      return res.json({
-        token: token,
-      })
+      res.cookie("token", token, {
+        httpOnly: false,
+        secure: false,
+        sameSite: "Strict",
+      });
+    
+      res.json({ message: "登録成功", token });
+   
 
     } catch (error) {
       console.error("Error:", error);
@@ -106,7 +111,13 @@ router.post("/login", async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    return res.json({ token });
+    res.cookie("token", token, {
+      httpOnly: false,
+      secure: false,
+      sameSite: "Strict",
+    });
+  
+    res.json({ message: "登録成功", token });
 
   } catch (error) {
     console.error("Login Error:", error);
