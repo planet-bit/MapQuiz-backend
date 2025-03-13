@@ -55,11 +55,14 @@ MapQuiz-backendでは、MySQLデータベースを使用して、クイズの問
 
 ## API エンドポイント
 
-| メソッド | エンドポイント      | 説明 |
-| ---- | -----------------     | ---------------- |
+| メソッド | エンドポイント      | 説明 |　　　　　リクエストボディの例　　　　|
+| ---- | -----------------     | ---------------------- |----------------------|
 | GET  | /api/countries        | 国選択リストを取得 |
-| GET  | /api/questions?country={国名}  | 各国のクイズの問題を取得 |
-| GET  | /api/letters/:country | 各国の文字情報を取得 |
+| GET  | /api/questions?country={国名}  | 各国のクイズの問題を取得 |/api/questions?country=russia
+| GET  | /api/letters/:country | 各国の文字情報を取得 |/api/letters/russia
+| POST  | /auth/register        |アカウント登録 |　{ "email": "user@example.com", "password": "your-password" }
+| POST  |  /auth/login  | ログイン用 |{ "email": "user@example.com", "password": "your-password" }
+| GET  | /auth/me |認証トークンの確認|トークン（Authorizationヘッダー）で認証
 
 ## データベース
 
