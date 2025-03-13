@@ -1,11 +1,10 @@
-const router = require("express").Router();
-const { body, validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const pool = require("../db.cjs");
-const JWT = require("jsonwebtoken")
-const authMiddleware = require("../middleware/auth");
-
-console.log("pool の内容:", pool);
+require("dotenv").config();  // .envファイルを読み込んで環境変数を設定
+const router = require("express").Router();  // Expressのルーターを作成
+const { body, validationResult } = require("express-validator");  // 入力データの検証
+const bcrypt = require("bcryptjs");  // パスワードのハッシュ化に使用
+const pool = require("../db.cjs");  // データベース接続のプール
+const JWT = require("jsonwebtoken"); // JWTの生成と検証
+const authMiddleware = require("../middleware/auth.cjs");  // 認証ミドルウェア
 
 router.get("/", (req, res) => {
   res.send("Hello Authjs");
@@ -13,16 +12,17 @@ router.get("/", (req, res) => {
 
 // ユーザー新規登録用のAPI
 router.post("/register", 
-  body("email").isEmail(), 
-  body("password").isLength({ min:6 }),
+  [
+    body("email").isEmail(), 
+    body("password").isLength({ min:6 })
+  ],
   async (req, res) => {
     let connection;
-    console.log("受け取ったデータ:", req.body);
 
     try {
-      const email = req.body.email;
-      const password = req.body.password;
+      const { email, password } = req.body
 
+      // 入力データの検証結果を取得
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -30,12 +30,12 @@ router.post("/register",
 
       // connectionをプールから取得
       connection = await pool.getConnection();
-
+      
+      // すでに登録されているメールアドレスか確認
       const [rows] = await connection.execute(
         "SELECT COUNT(*) AS count FROM users WHERE email = ?",
         [email]
       );
-
       if (rows[0].count > 0) {
         return res.status(400).json({ error: "このメールアドレスは既に登録されています。" });
       }
@@ -51,28 +51,26 @@ router.post("/register",
       );
       
       //クライアントへJWTの発行
-      const token = await JWT.sign({
-          email,
-        },
+      const token = JWT.sign(
+        { email },
         process.env.SECRET_KEY,
-        {
-          expiresIn: "24h",
-        }
+        { expiresIn: "24h" }
       );
       
       res.cookie("token", token, {
-        httpOnly: false,
-        secure: false,
-        sameSite: "Strict",
+        httpOnly: false,  // JavaScriptからクッキーを直接アクセス可能（開発用）
+        secure: false,  // 本番環境ではtrueにするべき（httpsを使用する場合）
+        sameSite: "Strict",  // クロスサイトリクエストでクッキーを送信しない設定
       });
     
       res.json({ message: "登録成功", token });
-   
+    } 
 
-    } catch (error) {
-      console.error("Error:", error);
+    catch (error) {
       res.status(500).json({ error: "サーバーエラーが発生しました。", details: error.message });
-    } finally {
+    } 
+
+    finally {
       // connectionを確実に解放
       if (connection) connection.release();
     }
@@ -86,7 +84,7 @@ router.post("/login", async (req, res) => {
     connection = await pool.getConnection();
     const { email, password } = req.body;
 
-    // データベースからユーザーを取得
+    // すでに登録されているメールアドレスか確認
     const [rows] = await connection.execute(
       "SELECT * FROM users WHERE email = ?",
       [email]
@@ -96,6 +94,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "そのユーザーは存在しません。" });
     }
 
+    //users テーブルから取得した、該当するユーザーのデータ
     const user = rows[0];
 
     // パスワードの照合
@@ -105,12 +104,12 @@ router.post("/login", async (req, res) => {
     }
 
     // JWTの発行
-    const token = await JWT.sign(
+    const token = JWT.sign(
       { email },
-      process.env.SECRET_KEY, 
+      process.env.SECRET_KEY,
       { expiresIn: "24h" }
     );
-
+    
     res.cookie("token", token, {
       httpOnly: false,
       secure: false,
@@ -119,20 +118,29 @@ router.post("/login", async (req, res) => {
   
     res.json({ message: "登録成功", token });
 
-  } catch (error) {
+  } 
+  
+  catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ error: "サーバーエラーが発生しました。" });
-  } finally {
+  } 
+  
+  finally {
     if (connection) connection.release();
   }
 });
 
+// ログイン後のユーザー情報を取得するAPI（認証が必要）
 router.get("/me", authMiddleware, async (req, res) => {
   try {
+    // 認証されたユーザーの情報を返す
     return res.json({ user: req.user });
-  } catch (error) {
+  } 
+  
+  catch (error) {
     return res.status(500).json({ error: "サーバーエラー" });
   }
 });
 
+// ルータをエクスポートして、他のファイルで使用できるようにする
 module.exports = router;
