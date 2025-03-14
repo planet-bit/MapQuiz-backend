@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const pool = require("./db.cjs");
 
-const authRoutes = require("./routes/auth");
+const authRoutes = require("./routes/auth.cjs");
 const countriesRoutes = require("./routes/countries.cjs");
 const questionsRoutes = require("./routes/questions.cjs");
 const lettersRoutes = require("./routes/letters.cjs");

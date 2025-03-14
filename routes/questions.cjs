@@ -2,17 +2,16 @@ const router = require("express").Router();  // Expressのルーターを作成
 const pool = require("../db.cjs"); // データベース接続のプール
 
 router.get("/", async (req, res) => {
-  console.log("クエリパラメータ:", req.query);
-  const { country } = req.query;
+  const { countryCode } = req.query;
 
-  if (!country) {
+  if (!countryCode) {
     return res.status(400).json({ error: "国名が必要です。" });
   }
 
   try {
     const [results] = await pool.query(
-      "SELECT local_name AS word, english_name AS answer FROM places WHERE country_name = ?",
-      [country]
+      "SELECT local_name AS word, english_name AS answer FROM places WHERE country_code = ?",
+      [countryCode]
     );
 
     if (!results.length) {
