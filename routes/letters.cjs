@@ -2,7 +2,7 @@ const router = require("express").Router();  // Expressのルーターを作成
 const pool = require("../db.cjs"); // データベース接続のプール
 
 
-router.get("/api/letters/:country", async (req, res) => {
+router.get("/:country", async (req, res) => {
     const country = req.params.country;
   
     try {
