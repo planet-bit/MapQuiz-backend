@@ -1,9 +1,6 @@
 # Node.js の依存ファイル
 /node_modules/
 
-# 環境変数ファイル
-.env
-
 # ログファイル
 /logs/
 /*.log

@@ -1,4 +1,5 @@
-const mysql = require("mysql2/promise");
+require('dotenv').config({ path: '../MapQuiz-env/.env' });
+const mysql = require('mysql2');
 
 // MySQLの接続プール（Connection Pool）を作成
 const pool = mysql.createPool({
@@ -14,5 +15,27 @@ const pool = mysql.createPool({
   charset: 'utf8mb4',
 });
 
-console.log("MySQL接続成功！");
+
+// クエリの実行と接続プールのリリース
+const executeQuery = () => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("接続取得エラー:", err);
+      return;
+    }
+    connection.query('SELECT * FROM countries', (err, results) => {
+      if (err) {
+        console.error("クエリエラー:", err);
+      } else {
+        console.log("クエリ結果:", results);
+      }
+      connection.release();  // クエリ後に接続をリリース
+    });
+  });
+};
+
+module.exports = pool; // 作成した接続プールを他のファイルで使えるようにエクスポート
+
+// クエリ実行
+executeQuery();
 module.exports = pool; // 作成した接続プールを他のファイルで使えるようにエクスポート

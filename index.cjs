@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '../MapQuiz-env/.env' });
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -12,7 +12,7 @@ const lettersRoutes = require("./routes/letters.cjs");
 
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:5173', // フロントエンドのURL
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // フロントエンドのURL
   methods: ['GET', 'POST', 'OPTIONS'], 
   allowedHeaders: ['Content-Type'],
   credentials: true, // クッキーを送受信するために必要
