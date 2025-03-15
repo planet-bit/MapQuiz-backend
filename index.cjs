@@ -31,6 +31,9 @@ app.listen(port, () => {
 (async () => {
   try {
     const connection = await pool.getConnection();
+    if (!connection) {
+      throw new Error("MySQL接続エラー: コネクションが取得できませんでした");
+    }
     console.log("✅ MySQL接続成功！");
     connection.release(); // 接続をプールに戻す
   } catch (err) {
