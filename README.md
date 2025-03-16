@@ -29,14 +29,16 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
 
 3. MapQuiz-envリポジトリからDockerコンテナを立ち上げます
 
-   MapQuiz-backendはMapQuiz-envリポジトリで管理されている環境変数を参照しています。envリポジトリ内のdocker-compose.ymlファイルを使用して、バックエンド、フロントエンド、データベースを一度にセットアップします。
+   MapQuiz-backendはMapQuiz-envリポジトリで管理されている環境変数を参照しています。envリポジトリ内のdocker-compose.ymlファイルを使用して、バックエンド、データベースを一度にセットアップします。
 
-   MapQuiz-envリポジトリをクローンし、必要な設定を行った後にコンテナを立ち上げます：
+   MapQuiz-envリポジトリをクローンし、必要な設定を行った後にコンテナを起動します：
 
    ```sh
+   cd ..
    git clone https://github.com/planet-bit/MapQuiz-env.git
    cd MapQuiz-env
    cp .env.sample .env
+   npm install
    docker-compose up
    ```
 
@@ -76,23 +78,3 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
 ## フロントエンドの起動
 
 バックエンドと連携するフロントエンドアプリケーションのセットアップについては、MapQuiz-frontend READMEを参照してください。
-
-
-
-
-
-2. 環境変数を設定
-
-   環境変数の設定には、リポジトリ内の `.env.sample` を参考にしてください。
-
-   `.env.sample` をコピーして `.env` を作成
-
-   ```sh
-   cp .env.sample .env
-   ```
-
-4. Dockerコンテナの起動
-
-   ```sh
-   docker-compose up -d
-   ```
