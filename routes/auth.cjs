@@ -45,14 +45,16 @@ router.post("/register",
       console.log(hashedPassword);
 
       // ユーザー情報のデータベースに挿入
-      await connection.execute(
+      const [result] = await connection.execute(
         "INSERT INTO users (email, password) VALUES (?, ?)",
         [email, hashedPassword]
       );
       
+      const user_id = result.insertId;
+
       //クライアントへJWTの発行
       const token = JWT.sign(
-        { email },
+        { id: user_id, email },
         process.env.SECRET_KEY,
         { expiresIn: "24h" }
       );
@@ -62,8 +64,8 @@ router.post("/register",
         secure: false,  // 本番環境ではtrueにするべき（httpsを使用する場合）
         sameSite: "Strict",  // クロスサイトリクエストでクッキーを送信しない設定
       });
-    
-      res.json({ message: "登録成功", token });
+
+      res.json({ message: "ログイン成功", token, id: user_id });
     } 
 
     catch (error) {
@@ -96,6 +98,7 @@ router.post("/login", async (req, res) => {
 
     //users テーブルから取得した、該当するユーザーのデータ
     const user = rows[0];
+    console.log("Fetched User:", user);
 
     // パスワードの照合
     const isMatch = await bcrypt.compare(password, user.password);
@@ -105,9 +108,9 @@ router.post("/login", async (req, res) => {
 
     // JWTの発行
     const token = JWT.sign(
-      { email },
+      { id: user.user_id, email: user.email },
       process.env.SECRET_KEY,
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
     );
     
     res.cookie("token", token, {
@@ -116,7 +119,7 @@ router.post("/login", async (req, res) => {
       sameSite: "Strict",
     });
   
-    res.json({ message: "登録成功", token });
+    res.json({ message: "ログイン成功", token, id: user.user_id });
 
   } 
   

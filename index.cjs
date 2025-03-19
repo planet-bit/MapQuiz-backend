@@ -9,12 +9,13 @@ const authRoutes = require("./routes/auth.cjs");
 const countriesRoutes = require("./routes/countries.cjs");
 const questionsRoutes = require("./routes/questions.cjs");
 const lettersRoutes = require("./routes/letters.cjs");
+const streaksRoutes = require("./routes/streaks.cjs");
 
 app.use(express.json());
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173', // フロントエンドのURL
   methods: ['GET', 'POST', 'OPTIONS'], 
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type' ,'Authorization'],
   credentials: true, // クッキーを送受信するために必要
 }));
 
@@ -22,6 +23,7 @@ app.use("/auth", authRoutes);
 app.use("/api/countries", countriesRoutes);
 app.use("/api/questions", questionsRoutes);
 app.use("/api/letters", lettersRoutes);
+app.use("/api/streaks", streaksRoutes);
 
 app.options('*', cors());
 app.listen(port, () => {

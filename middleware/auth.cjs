@@ -16,7 +16,7 @@ const authMiddleware = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
     // 認証されたユーザー情報をreq.userにセット
-    req.user = decoded; 
+    req.user = decoded;  // { id: user_id, email }
 
     next();  // トークンが正しい場合に、認証されたユーザーに関連する処理が行われる
   } catch (error) {
