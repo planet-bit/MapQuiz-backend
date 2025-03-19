@@ -60,15 +60,15 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
 
 ## API エンドポイント
 
-| メソッド | エンドポイント      | 説明 |　　　　　例　　　　|
-| ---- | -----------------     | ---------------------- |----------------------|
+| メソッド | エンドポイント | 説明          |　　　　　例　　　　|
+| ---- | ---------------| ---------------------- |----------------------|
 | GET  | /api/countries        | 国選択リストを取得 |
 | GET  | /api/questions?countryCode={国名}  | 各国のクイズの問題を取得 |/api/questions?countryCode=ru
 | GET  | /api/letters/:countryCode | 各国の文字情報を取得 | /api/letters/ru
-| POST  | /auth/register        |アカウント登録 |　{ "email": "user@example.com", "password": "your-password" }
-| POST  |  /auth/login  | ログイン用 |{ "email": "user@example.com", "password": "your-password" }
+| POST  | /auth/register        |アカウント登録 |　{ "email": "user@example.com", "password": "password" }
+| POST  |  /auth/login  | ログイン用 |{ "email": "user@example.com", "password": "password" }
 | GET  | /auth/me |認証トークンの確認|トークン（Authorizationヘッダー）で認証
-
+| POST| /api/straks/update | 連続正解記録の管理 | {"user_id": 14,"game_type": "letter","country_code": "kr","streak": 8,"correct_answers": 8}
 ## データベース
 
 - MySQLを使用
