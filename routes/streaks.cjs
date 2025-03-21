@@ -30,4 +30,41 @@ router.post("/update", async (req, res) => {
     }
 });
 
+router.get("/get", async (req, res) => {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+        return res.status(400).json({ error: "Missing user_id" });
+    }
+
+    try {
+        const sql = `
+            SELECT
+            us.game_type,
+            c.country_name,
+            us.max_streak,
+            us.attempts_count AS total_attempts,
+            us.correct_answers_count AS total_correct_answers,
+            us.updated_at AS last_updated
+            FROM
+            user_streaks us
+            JOIN
+            countries c ON us.country_code = c.country_code
+            WHERE
+            us.user_id = ?;
+        `;
+        const [rows] = await pool.query(sql, [user_id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "No records found for this user." });
+        }
+
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+
+
 module.exports = router;

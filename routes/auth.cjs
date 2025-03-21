@@ -52,6 +52,35 @@ router.post("/register",
       
       const user_id = result.insertId;
 
+      // `countries` テーブルから国名を取得
+      const [countries] = await connection.execute("SELECT country_code FROM countries");
+      
+      // game_type は 'location' と 'letter' のみ
+      const gameTypes = ['location', 'letter'];
+
+      // 各国、各ゲームタイプの初期データを `user_streaks` に挿入
+      const insertPromises = countries.map(async (country) => {
+        for (let gameType of gameTypes) {
+          const sql = `
+            INSERT INTO user_streaks (user_id, game_type, country_code, max_streak, attempts_count, correct_answers_count, updated_at)
+            VALUES (?, ?, ?, 0, 0, 0, NOW())
+            ON DUPLICATE KEY UPDATE 
+              max_streak = GREATEST(max_streak, VALUES(max_streak)),
+              attempts_count = attempts_count + 1,
+              correct_answers_count = correct_answers_count + VALUES(correct_answers_count),
+              updated_at = NOW();
+          `;
+          const values = [user_id, gameType, country.country_code];
+          await connection.execute(sql, values);
+        }
+      });
+
+      // Promise.allで非同期処理を待つ
+      await Promise.all(insertPromises);
+
+
+
+
       //クライアントへJWTの発行
       const token = JWT.sign(
         { id: user_id, email },
