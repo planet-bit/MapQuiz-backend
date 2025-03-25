@@ -42,7 +42,7 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
 
 4. MapQuiz-envリポジトリからDockerコンテナを立ち上げます
 
-   MapQuiz-backendはMapQuiz-envリポジトリで管理されている環境変数を参照しています。envリポジトリ内のdocker-compose.ymlファイルを使用して、バックエンド、データベースを一度にセットアップします。
+   envリポジトリ内のdocker-compose.ymlファイルを使用して、バックエンド、データベースを一度にセットアップします。
 
    MapQuiz-envリポジトリをクローンし、必要な設定を行った後にコンテナを起動します：
 
