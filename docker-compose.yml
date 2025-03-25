@@ -1,0 +1,23 @@
+services:
+ mapquiz-node:
+    build:
+      context: .  # backendディレクトリをビルド対象に
+      dockerfile: Dockerfile
+    container_name: mapquiz-node-container
+    working_dir: /app
+    volumes:
+      - .:/app  # バックエンドコードをマウント
+    ports:
+      - "3000:3000"
+    command: ["npm", "run", "dev"]
+    depends_on:
+      mapquiz-mysql:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - mapquiz-network
+
+networks:
+ mapquiz-network:
+  external: true
