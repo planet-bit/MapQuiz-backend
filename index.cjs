@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../MapQuiz-env/.env' });
+require('dotenv').config({ path: '../MapQuiz-env/.env.backend' });
 const express = require('express');
 const cors = require('cors');
 const app = express();
