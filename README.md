@@ -36,7 +36,7 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
 
 
    ```sh
-   cp .env.sample .env
+   cp env.backend.sample .env.backend
    ```
 
 
@@ -50,7 +50,7 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
    cd ..
    git clone https://github.com/planet-bit/MapQuiz-env.git
    cd MapQuiz-env
-   cp .env.sample .env
+   cp env.db.sample .env.db
    npm install
    docker-compose up
    ```
