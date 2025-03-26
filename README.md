@@ -27,20 +27,7 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
    npm install
    ```
 
-
-3. 環境変数ファイルの設定
-
-   env.sampleにはサンプルのバックエンドの接続設定が格納されています。
-   
-   まず .env.sample を .env にコピーして、必要に応じて設定を編集します。
-
-
-   ```sh
-   cp env.backend.sample .env.backend
-   ```
-
-
-4. MapQuiz-envリポジトリからDockerコンテナを立ち上げます
+3. MapQuiz-envリポジトリからDockerコンテナを立ち上げます
 
    envリポジトリ内のdocker-compose.ymlファイルを使用して、バックエンド、データベースを一度にセットアップします。
 
@@ -58,7 +45,7 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
    これで、mapquiz-node-container（バックエンド）、mapquiz-mysql-container（データベース）などが立ち上がります。
 
 
-5. バックエンドアプリの確認
+4. バックエンドアプリの確認
 
    コンテナが起動した後、Node.jsのバックエンドアプリケーションが実行されます。
    
