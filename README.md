@@ -21,13 +21,7 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
    cd MapQuiz-backend
    ```
 
-2. 必要なパッケージをインストールします
-
-   ```sh
-   npm install
-   ```
-
-3. MapQuiz-envリポジトリからDockerコンテナを立ち上げます
+2. MapQuiz-envリポジトリからDockerコンテナを立ち上げます
 
    envリポジトリ内のdocker-compose.ymlファイルを使用して、バックエンド、データベースを一度にセットアップします。
 
@@ -38,6 +32,7 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
    git clone https://github.com/planet-bit/MapQuiz-env.git
    cd MapQuiz-env
    cp env.db.sample .env.db
+   cp .env.sample ../MapQuiz-backend/.env
    npm install
    docker-compose up
    ```
@@ -45,7 +40,7 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
    これで、mapquiz-node-container（バックエンド）、mapquiz-mysql-container（データベース）などが立ち上がります。
 
 
-4. バックエンドアプリの確認
+3. バックエンドアプリの確認
 
    コンテナが起動した後、Node.jsのバックエンドアプリケーションが実行されます。
    

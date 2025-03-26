@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../MapQuiz-env/.env' });
+require('dotenv').config({ path: '.env' });
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -26,8 +26,8 @@ app.use("/api/letters", lettersRoutes);
 app.use("/api/streaks", streaksRoutes);
 
 app.options('*', cors());
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+app.listen(3000, '0.0.0.0', () => {
+  console.log('Server running on port 3000');
 });
 
 (async () => {
