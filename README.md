@@ -11,42 +11,55 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
 - Node.js (推奨バージョン: v22.13.1)
 - npm
 - Docker
+- Docker Compose
 
 ### インストール手順
 
-1. リポジトリをクローンします
+1. 必要なリポジトリをクローン
 
    ```sh
+   git clone https://github.com/planet-bit/MapQuiz-frontend.git
    git clone https://github.com/planet-bit/MapQuiz-backend.git
-   cd MapQuiz-backend
+   git clone https://github.com/planet-bit/MapQuiz-env.git
    ```
 
-2. MapQuiz-envリポジトリからDockerコンテナを立ち上げます
+2. 環境変数ファイルの設定
 
-   envリポジトリ内のdocker-compose.ymlファイルを使用して、バックエンド、データベースを一度にセットアップします。
+   env.sampleにはサンプルのバックエンドの接続設定、
+   .env.db.sampleにはサンプルのデータベースの接続設定が格納されています。
+   
+   まず .env.sample を /MapQuiz-backend/.env にコピー、
+   次に .env.db.sample を /MapQuiz-env/.env.db にコピーします。
 
-   MapQuiz-envリポジトリをクローンし、必要な設定を行った後にコンテナを起動します：
 
    ```sh
-   cd ..
-   git clone https://github.com/planet-bit/MapQuiz-env.git
    cd MapQuiz-env
-   cp env.db.sample .env.db
    cp .env.sample ../MapQuiz-backend/.env
-   npm install
+   cp .env.db.sample .env.db
+   ```
+
+3. Dockerコンテナの起動
+
+   Docker Composeを使用して、すべてのコンテナ（バックエンド、フロントエンド、データベース）を立ち上げます。
+
+   ```sh
    docker-compose up
    ```
 
-   これで、mapquiz-node-container（バックエンド）、mapquiz-mysql-container（データベース）などが立ち上がります。
+   これにより、以下のコンテナが起動します：
 
+   - mapquiz-node-container（フロントエンド、バックエンド）
+   - mapquiz-mysql-container（データベース）
 
-3. バックエンドアプリの確認
+4. バックエンドアプリの確認
 
    コンテナが起動した後、Node.jsのバックエンドアプリケーションが実行されます。
    
-   mapquiz-node-containerがポート番号3000でリッスンします。
    
-   ブラウザでは、[http://localhost:3000](http://localhost:3000) を開いて、APIが動作していることを確認してください。
+   バックエンドへは、http://localhost:3000 を開いて、APIが動作していることを確認してください。
+
+   フロントエンドへは http://localhost:5173 でアプリにアクセスできます。
+   
    
 
 ## 設定
