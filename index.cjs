@@ -10,6 +10,7 @@ const countriesRoutes = require("./routes/countries.cjs");
 const questionsRoutes = require("./routes/questions.cjs");
 const lettersRoutes = require("./routes/letters.cjs");
 const streaksRoutes = require("./routes/streaks.cjs");
+const regionsRoutes = require("./routes/regions.cjs");
 
 app.use(express.json());
 app.use(cors({
@@ -24,6 +25,7 @@ app.use("/api/countries", countriesRoutes);
 app.use("/api/questions", questionsRoutes);
 app.use("/api/letters", lettersRoutes);
 app.use("/api/streaks", streaksRoutes);
+app.use("/api/regions", regionsRoutes);
 
 app.options('*', cors());
 app.listen(3000, '0.0.0.0', () => {
