@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
 
   try {
     const [results] = await pool.query(
-      "SELECT local_name AS word, english_name AS answer FROM regions WHERE country_code = ?",
+      "SELECT region_id, local_name AS word, english_name AS answer FROM regions WHERE country_code = ?",
       [countryCode]
     );
 
