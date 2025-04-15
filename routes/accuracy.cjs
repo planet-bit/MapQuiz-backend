@@ -14,13 +14,14 @@ router.get('/', async (req, res) => {
     const [rows] = await pool.execute(`
       SELECT
           ua.region_id,
+          r.english_name AS region_name,
           COUNT(*) AS total_answers,
           SUM(ua.is_correct) AS correct_answers,
           ROUND(SUM(ua.is_correct) / COUNT(*) * 100, 2) AS accuracy_percentage
       FROM user_answers ua
       JOIN regions r ON ua.region_id = r.region_id
       WHERE ua.user_id = ? AND ua.game_type = ? AND r.country_code = ?
-      GROUP BY ua.region_id
+      GROUP BY ua.region_id, r.english_name
   `, [userId, gameType, country]);
   
       res.json({

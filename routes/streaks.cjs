@@ -41,6 +41,7 @@ router.get("/get", async (req, res) => {
         const sql = `
             SELECT
             us.game_type,
+            us.country_code,
             c.country_name,
             us.max_streak,
             us.attempts_count AS total_attempts,
