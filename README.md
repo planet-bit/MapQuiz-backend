@@ -67,12 +67,14 @@ MapQuizアプリケーションのバックエンド部分です。このリポ�
 | メソッド | エンドポイント | 説明          |　　　　　例　　　　|
 | ---- | ---------------| ---------------------- |----------------------|
 | GET  | /api/countries        | 国選択リストを取得 |
-| GET  | /api/questions?countryCode={国名}  | 各国のクイズの問題を取得 |/api/questions?countryCode=ru
+| GET  | /api/questions?countryCode={country_code}  | 各国のクイズの問題を取得 |/api/questions?countryCode=ru
 | GET  | /api/letters/:countryCode | 各国の文字情報を取得 | /api/letters/ru
 | POST  | /auth/register        |アカウント登録 |　{ "email": "user@example.com", "password": "password" }
 | POST  |  /auth/login  | ログイン用 |{ "email": "user@example.com", "password": "password" }
 | GET  | /auth/me |認証トークンの確認|トークン（Authorizationヘッダー）で認証
 | POST| /api/straks/update | 連続正解記録の管理 | {"user_id": 14,"game_type": "letter","country_code": "kr","streak": 8,"correct_answers": 8}
+| POST| /api/answers | 地域ごとの正答率記録 | {"user_id": 14,"region_id": 5,"is_correct": true,"game_type": "letters"}
+| GET| /api/region-accuracy?user_id={user_id}&country={country_code}&game_type={game_type} | 地域ごとの正答率取得 |/api/accuracy?user_id=14&country=ru&game_type=letter
 ## データベース
 
 - MySQLを使用
