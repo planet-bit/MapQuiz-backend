@@ -1,12 +1,15 @@
-const router = require("express").Router();  // Expressのルーターを作成
-const pool = require("../db.cjs"); // データベース接続のプール
+const express = require("express");
+const router = express.Router();
+const pool = require("../db.cjs"); // MySQL接続の設定
+const authenticateToken = require("../middleware/auth.cjs");
 
-  router.post('/', async (req, res) => {
-    const { user_id, region_id, is_correct, game_type } = req.body;
-  
+  router.post('/', authenticateToken, async (req, res) => {
+    const { region_id, is_correct, game_type } = req.body;
+    const user_id = req.user.id; // トークンから取得
+    console.log("受け取ったデータ:", req.body);
     if (
-      user_id == null ||
-      region_id == null ||
+      !user_id ||
+      !region_id ||
       typeof is_correct !== 'boolean' ||
       !game_type
     ) {
