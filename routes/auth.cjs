@@ -14,13 +14,14 @@ router.get("/", (req, res) => {
 router.post("/register", 
   [
     body("email").isEmail(), 
-    body("password").isLength({ min:6 })
+    body("password").isLength({ min:6 }),
+    body("user_name").notEmpty().withMessage("ユーザーネームは必須です")
   ],
   async (req, res) => {
     let connection;
 
     try {
-      const { email, password } = req.body
+      const { email, password, user_name } = req.body;
 
       // 入力データの検証結果を取得
       const errors = validationResult(req);
@@ -46,8 +47,8 @@ router.post("/register",
 
       // ユーザー情報のデータベースに挿入
       const [result] = await connection.execute(
-        "INSERT INTO users (email, password) VALUES (?, ?)",
-        [email, hashedPassword]
+        "INSERT INTO users (email, password, user_name) VALUES (?, ?, ?)",
+        [email, hashedPassword, user_name]
       );
       
       const user_id = result.insertId;
@@ -78,12 +79,21 @@ router.post("/register",
       // Promise.allで非同期処理を待つ
       await Promise.all(insertPromises);
 
-
+      const [userRows] = await connection.execute(
+        "SELECT user_id, user_name, role_id FROM users WHERE user_id = ?",
+        [user_id]
+      );
+      const user = userRows[0];
+      
 
 
       //クライアントへJWTの発行
       const token = JWT.sign(
-        { id: user_id, email },
+        {
+          id: user.user_id,
+          user_name: user.user_name,
+          role_id: user.role_id
+        },
         process.env.SECRET_KEY,
         { expiresIn: "24h" }
       );
@@ -117,7 +127,7 @@ router.post("/login", async (req, res) => {
 
     // すでに登録されているメールアドレスか確認
     const [rows] = await connection.execute(
-      "SELECT * FROM users WHERE email = ?",
+      "SELECT user_id, email, password, user_name, role_id FROM users WHERE email = ?",
       [email]
     );
 
@@ -127,7 +137,7 @@ router.post("/login", async (req, res) => {
 
     //users テーブルから取得した、該当するユーザーのデータ
     const user = rows[0];
-    console.log("Fetched User:", user);
+    
 
     // パスワードの照合
     const isMatch = await bcrypt.compare(password, user.password);
@@ -137,9 +147,13 @@ router.post("/login", async (req, res) => {
 
     // JWTの発行
     const token = JWT.sign(
-      { id: user.user_id, email: user.email },
+      {
+        id: user.user_id,
+        user_name: user.user_name,
+        role_id: user.role_id
+      },
       process.env.SECRET_KEY,
-      { expiresIn: "24h" },
+      { expiresIn: "24h" }
     );
     
     res.cookie("token", token, {

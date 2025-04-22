@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db.cjs"); // MySQL接続の設定
+const authenticateToken = require("../middleware/auth.cjs");
 
-router.post("/update", async (req, res) => {
-    const { user_id, game_type, country_code, streak, correct_answers } = req.body;
+router.post("/update", authenticateToken, async (req, res) => {
+    const { game_type, country_code, streak, correct_answers } = req.body;
+    const user_id = req.user.id; // トークンから取得
 
-    if (!user_id || !game_type || !country_code || streak === undefined || correct_answers === undefined) {
+    if (!game_type || !country_code || streak === undefined || correct_answers === undefined) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -19,7 +21,6 @@ router.post("/update", async (req, res) => {
                 correct_answers_count = correct_answers_count + VALUES(correct_answers_count),
                 updated_at = NOW();
         `;
-
         const values = [user_id, game_type, country_code, streak, correct_answers];
         await pool.query(sql, values);
 
@@ -30,12 +31,8 @@ router.post("/update", async (req, res) => {
     }
 });
 
-router.get("/get", async (req, res) => {
-    const { user_id } = req.query;
-
-    if (!user_id) {
-        return res.status(400).json({ error: "Missing user_id" });
-    }
+router.get("/get", authenticateToken, async (req, res) => {
+    const user_id = req.user.id; // トークンから取得
 
     try {
         const sql = `
@@ -66,6 +63,7 @@ router.get("/get", async (req, res) => {
         res.status(500).json({ error: "Database error" });
     }
 });
+
 
 
 module.exports = router;
