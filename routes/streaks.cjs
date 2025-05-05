@@ -37,21 +37,22 @@ router.get("/get", authenticateToken, async (req, res) => {
     try {
         const sql = `
             SELECT
-            us.game_type,
-            us.country_code,
-            c.country_name,
-            us.max_streak,
-            us.attempts_count AS total_attempts,
-            us.correct_answers_count AS total_correct_answers,
-            us.updated_at AS last_updated
+                us.game_type,
+                us.country_code,
+                c.country_name,
+                us.max_streak,
+                us.attempts_count AS total_attempts,
+                us.correct_answers_count AS total_correct_answers,
+                us.updated_at AS last_updated
             FROM
-            user_streaks us
+                user_streaks us
             JOIN
-            countries c ON us.country_code = c.country_code
+                countries c ON us.country_code = c.country_code
             WHERE
-            us.user_id = ?;
+                us.user_id = ?
+                AND us.country_code IN (?, ?);
         `;
-        const [rows] = await pool.query(sql, [user_id]);
+        const [rows] = await pool.query(sql, [user_id, 'ru', 'kr']);
 
         if (rows.length === 0) {
             return res.status(404).json({ error: "No records found for this user." });
