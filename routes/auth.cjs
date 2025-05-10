@@ -11,55 +11,46 @@ router.get("/", (req, res) => {
 })
 
 // ユーザー新規登録用のAPI
-router.post("/register", 
+router.post(
+  "/register",
   [
-    body("email").isEmail(), 
-    body("password").isLength({ min:6 }),
-    body("user_name").notEmpty().withMessage("ユーザーネームは必須です")
+    body("user_name").notEmpty().withMessage("ユーザーネームは必須です"),
+    body("password").isLength({ min: 6 }).withMessage("パスワードは6文字以上必要です")
   ],
   async (req, res) => {
     let connection;
 
     try {
-      const { email, password, user_name } = req.body;
+      const { password, user_name } = req.body;
 
-      // 入力データの検証結果を取得
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      // connectionをプールから取得
       connection = await pool.getConnection();
-      
-      // すでに登録されているメールアドレスか確認
-      const [rows] = await connection.execute(
-        "SELECT COUNT(*) AS count FROM users WHERE email = ?",
-        [email]
+
+      // user_name が重複していないかチェック
+      const [existing] = await connection.execute(
+        "SELECT COUNT(*) AS count FROM users WHERE user_name = ?",
+        [user_name]
       );
-      if (rows[0].count > 0) {
-        return res.status(400).json({ error: "このメールアドレスは既に登録されています。" });
+      if (existing[0].count > 0) {
+        return res.status(400).json({ error: "このユーザーネームは既に使用されています。" });
       }
 
-      // パスワードのハッシュ化
-      let hashedPassword = await bcrypt.hash(password, 12);
-      console.log(hashedPassword);
+      const hashedPassword = await bcrypt.hash(password, 12);
 
-      // ユーザー情報のデータベースに挿入
       const [result] = await connection.execute(
-        "INSERT INTO users (email, password, user_name) VALUES (?, ?, ?)",
-        [email, hashedPassword, user_name]
+        "INSERT INTO users (user_name, password) VALUES (?, ?)",
+        [user_name, hashedPassword]
       );
-      
+
       const user_id = result.insertId;
 
-      // `countries` テーブルから国名を取得
       const [countries] = await connection.execute("SELECT country_code FROM countries");
-      
-      // game_type は 'location' と 'letter' のみ
-      const gameTypes = ['location', 'letter'];
+      const gameTypes = ["location", "letter"];
 
-      // 各国、各ゲームタイプの初期データを `user_streaks` に挿入
       const insertPromises = countries.map(async (country) => {
         for (let gameType of gameTypes) {
           const sql = `
@@ -76,7 +67,6 @@ router.post("/register",
         }
       });
 
-      // Promise.allで非同期処理を待つ
       await Promise.all(insertPromises);
 
       const [userRows] = await connection.execute(
@@ -84,10 +74,7 @@ router.post("/register",
         [user_id]
       );
       const user = userRows[0];
-      
 
-
-      //クライアントへJWTの発行
       const token = JWT.sign(
         {
           id: user.user_id,
@@ -97,22 +84,17 @@ router.post("/register",
         process.env.SECRET_KEY,
         { expiresIn: "24h" }
       );
-      
+
       res.cookie("token", token, {
-        httpOnly: false,  // JavaScriptからクッキーを直接アクセス可能（開発用）
-        secure: false,  // 本番環境ではtrueにするべき（httpsを使用する場合）
-        sameSite: "Strict",  // クロスサイトリクエストでクッキーを送信しない設定
+        httpOnly: false,
+        secure: false,
+        sameSite: "Strict"
       });
 
       res.json({ message: "ログイン成功", token, id: user_id });
-    } 
-
-    catch (error) {
+    } catch (error) {
       res.status(500).json({ error: "サーバーエラーが発生しました。", details: error.message });
-    } 
-
-    finally {
-      // connectionを確実に解放
+    } finally {
       if (connection) connection.release();
     }
   }
@@ -123,21 +105,19 @@ router.post("/login", async (req, res) => {
   let connection;
   try {
     connection = await pool.getConnection();
-    const { email, password } = req.body;
+    const { user_name, password } = req.body;
 
-    // すでに登録されているメールアドレスか確認
+    // ユーザーネームで検索
     const [rows] = await connection.execute(
-      "SELECT user_id, email, password, user_name, role_id FROM users WHERE email = ?",
-      [email]
+      "SELECT user_id, password, user_name, role_id FROM users WHERE user_name = ?",
+      [user_name]
     );
 
     if (rows.length === 0) {
       return res.status(400).json({ error: "そのユーザーは存在しません。" });
     }
 
-    //users テーブルから取得した、該当するユーザーのデータ
     const user = rows[0];
-    
 
     // パスワードの照合
     const isMatch = await bcrypt.compare(password, user.password);
@@ -161,17 +141,13 @@ router.post("/login", async (req, res) => {
       secure: false,
       sameSite: "Strict",
     });
-  
+
     res.json({ message: "ログイン成功", token, id: user.user_id });
 
-  } 
-  
-  catch (error) {
+  } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ error: "サーバーエラーが発生しました。" });
-  } 
-  
-  finally {
+  } finally {
     if (connection) connection.release();
   }
 });
