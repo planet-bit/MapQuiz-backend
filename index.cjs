@@ -16,7 +16,7 @@ const accuracyRoutes = require("./routes/accuracy.cjs");
 
 app.use(express.json());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // フロントエンドのURL
+  origin: process.env.FRONTEND_URL || 'http://18.177.61.220:5173', // フロントエンドのURL
   methods: ['GET', 'POST', 'OPTIONS'], 
   allowedHeaders: ['Content-Type' ,'Authorization'],
   credentials: true, // クッキーを送受信するために必要
